@@ -106,7 +106,8 @@
             </logger>
             <logger category="sun.rmi">
                 <level name="WARN"/>
-            </logger>
+	     </logger>
+            <!-- ##LOGGER-CATEGORY## -->
             <root-logger>
                 <level name="INFO"/>
                 <handlers>
@@ -123,7 +124,7 @@
                 </json-formatter>
             </formatter>
             <formatter name="COLOR-PATTERN">
-                <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c](%t) %s%e%n"/>
+                <pattern-formatter pattern="%K{level}%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"/>
             </formatter>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:batch-jberet:2.0">
@@ -146,13 +147,7 @@
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
                     </driver>
-                    <driver name="mysql" module="com.mysql">
-                        <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
-                    </driver>
-                    <driver name="postgresql" module="org.postgresql">
-                        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-                    </driver>
-                    <!-- ##DRIVERS## -->
+                    <driver name="mariadb" module="org.mariadb">    <xa-datasource-class>org.mariadb.jdbc.MariaDbDataSource</xa-datasource-class></driver><driver name="postgresql" module="org.postgresql">    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class></driver><!-- ##DRIVERS## -->
                 </drivers>
             </datasources>
         </subsystem>
@@ -556,9 +551,10 @@
                 </process-id>
             </core-environment>
             <recovery-environment socket-binding="txn-recovery-environment" status-socket-binding="txn-status-manager" recovery-listener="true"/>
+            <coordinator-environment statistics-enabled="${wildfly.transactions.statistics-enabled:${wildfly.statistics-enabled:false}}"/>
             <!-- ##JDBC_STORE## -->
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:undertow:7.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other">
+        <subsystem xmlns="urn:jboss:domain:undertow:7.0" default-server="default-server" default-virtual-host="default-host" default-servlet-container="default" default-security-domain="other" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}">
             <buffer-cache name="default"/>
             <server name="default-server">
                 <ajp-listener name="ajp" socket-binding="ajp"/>
@@ -573,7 +569,7 @@
                     <filter-ref name="Access-Control-Allow-Methods"/>
                     <filter-ref name="Access-Control-Allow-Headers"/>
                     <filter-ref name="Access-Control-Allow-Credentials"/>
-                    
+
                     <http-invoker security-realm="ApplicationRealm"/>
                 </host>
             </server>
